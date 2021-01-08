@@ -7,11 +7,13 @@ from starter.Tree import Tree
 from starter.Node import Node
 
 
-def existsInRestrictions(element, restrictions):
-    for i in restrictions:
-        if(element==i):
-            return True
-    return False
+def getPossibleFeatureValues(feature):
+    possibleValues=[]
+    for x in feature:
+        if not(x in possibleValues):
+            possibleValues.append(x)
+    return possibleValues
+
 
 def completeTree(node,dataset):
     dataSetEntropy=getFeatureEntropy(dataset['output'].values.tolist())
@@ -27,11 +29,11 @@ def completeTree(node,dataset):
     maxGain = max(gainValuesPerFeature)
     maxIndex = gainValuesPerFeature.index(maxGain)
     node.name=columnHeader[maxIndex]
-    print(node.name)
-    node.left=Node()
-    node.right=Node()
-    completeTree(node.left,dataset[dataSet[node.name]=='y'])
-    completeTree(node.right,dataset[dataSet[node.name]=='n'])
+    possbileValues=getPossibleFeatureValues(dataset[columnHeader[maxIndex]].values.tolist())
+
+    for index,value in enumerate(possbileValues):
+        node.children.append(Node())
+        completeTree(node.children[index],dataset[dataSet[node.name]==value])
 
 
 def calculateEntropy(numberOfYes, numberOfNo):
@@ -129,7 +131,6 @@ for index, row in dataSet.iterrows():
             tmp[i] = 'n'
     dataSet.loc[index] = tmp
 
-# data=list(dataset.values.tolist())
 root=Node()
 completeTree(root,dataSet)
 
